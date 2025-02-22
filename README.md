@@ -26,8 +26,10 @@
 
 ## Badges
 
-![React](https://img.shields.io/badge/React-19-blue) 
-![JavaScript](https://img.shields.io/badge/JavaScript-ES6-yellow)  
+![HTML](https://img.shields.io/badge/HTML-5-blue)  
+![CSS](https://img.shields.io/badge/CSS-3-blue)  
+![Javascript](https://img.shields.io/badge/JavaScript-ES6-yellow)    
+![React](https://img.shields.io/badge/React-19-blue)  
 ![Vite](https://img.shields.io/badge/Vite-4-purple)  
 ![API](https://img.shields.io/badge/REST%20API-JSON-orange)  
 ![Git](https://img.shields.io/badge/Git-Version--Control-red)  
