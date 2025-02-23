@@ -1,26 +1,28 @@
 import { useState } from "react";
 import { currencyConverter } from "./api/postApi";
+import { useQuery } from "@tanstack/react-query";
 
 const App = () => {
   const [amount, setAmount] = useState(0); // Amount to convert
   const [fromCurrency, setFromCurrency] = useState("USD"); // Base currency
   const [toCurrency, setToCurrency] = useState("INR"); // Target currency
-  const [convertedAmount, setConvertedAmount] = useState(null); // Converted value
-  const [loading, setLoading] = useState(false); // Loading state
-  const [error, setError] = useState(null); // Error state
 
-  // handleConvertCurrency :-
-  const handleConvertCurrency = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await currencyConverter(fromCurrency, toCurrency, amount);
-      const { conversion_result } = await res.data;
-      setLoading(false);
-      setConvertedAmount(conversion_result);
-    } catch (error) {
-      setError("Error fetching conversion rate");
-      console.error(error);
+  // to fetch the data :-
+  const {
+    data: convertedAmount,
+    isLoading,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: ["currency"],
+    queryFn: () => currencyConverter(fromCurrency, toCurrency, amount),
+    enabled: false,
+  });
+
+  // handleCurrencyConverter :-
+  const handleCurrencyConverter = async () => {
+    if (amount > 0) {
+      refetch();
     }
   };
 
@@ -48,14 +50,17 @@ const App = () => {
                 value={fromCurrency}
                 onChange={(e) => setFromCurrency(e.target.value)}
               >
-                <option value="USD">USD</option>
-                <option value="EUR">EUR</option>
-                <option value="INR">INR</option>
-                <option value="GBP">GBP</option>
-                <option value="AUD">AUD</option>
+                {["USD", "EUR", "INR", "GBP", "AUD"].map((currency) => {
+                  return (
+                    <option key={currency} value={currency}>
+                      {currency}
+                    </option>
+                  );
+                })}
               </select>
             </label>
           </div>
+
           <div>
             <label>
               To:
@@ -63,21 +68,23 @@ const App = () => {
                 value={toCurrency}
                 onChange={(e) => setToCurrency(e.target.value)}
               >
-                <option value="INR">INR</option>
-                <option value="USD">USD</option>
-                <option value="EUR">EUR</option>
-                <option value="GBP">GBP</option>
-                <option value="AUD">AUD</option>
+                {["INR", "USD", "EUR", "GBP", "AUD"].map((currency) => {
+                  return (
+                    <option key={currency} value={currency}>
+                      {currency}
+                    </option>
+                  );
+                })}
               </select>
             </label>
           </div>
         </div>
 
         <button
-          disabled={loading || amount <= 0}
-          onClick={handleConvertCurrency}
+          disabled={isLoading || amount <= 0}
+          onClick={handleCurrencyConverter}
         >
-          {loading ? "Converting.." : "Convert"}
+          {isLoading ? "Converting.." : "Convert"}
         </button>
 
         <hr />
@@ -90,7 +97,7 @@ const App = () => {
           </div>
         )}
 
-        {error && <p>{error}</p>}
+        {error && <p>An error occured: {error.message}</p>}
       </div>
     </section>
   );
